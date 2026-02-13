@@ -1,0 +1,15 @@
+<div class="user" data-user-id="<%= user.id %>">
+  <% if user.avatar.attached? %>
+    <%= image_tag user.avatar, class: "avatar" %>
+  <% else %>
+    <div class="avatar avatar--placeholder">
+      <%= user.name.first.upcase %>
+    </div>
+  <% end %>
+  <div class="user-info">
+    <span class="user-name"><%= user.name %></span>
+    <% if defined?(user.email_address) && user.email_address.present? %>
+      <span class="user-email"><%= user.email_address %></span>
+    <% end %>
+  </div>
+</div>
