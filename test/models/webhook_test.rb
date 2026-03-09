@@ -62,7 +62,15 @@ class WebhookTest < ActiveSupport::TestCase
 
   test "delivery with connection failure" do
     Webhook.any_instance.stubs(:post).raises(Errno::ECONNREFUSED)
-    response = webhooks(:bender).deliver(messages(:first))
+    webhooks(:bender).deliver(messages(:first))
+
+    reply_message = Message.last
+    assert_equal "Failed to connect to bot webhook endpoint", reply_message.body.to_plain_text
+  end
+
+  test "delivery with socket error" do
+    Webhook.any_instance.stubs(:post).raises(SocketError, "failed to resolve host")
+    webhooks(:bender).deliver(messages(:first))
 
     reply_message = Message.last
     assert_equal "Failed to connect to bot webhook endpoint", reply_message.body.to_plain_text

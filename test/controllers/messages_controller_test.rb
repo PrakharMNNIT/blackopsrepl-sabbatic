@@ -73,6 +73,17 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "destroying a message succeeds when redis is unavailable" do
+    message = @room.messages.where(creator: users(:david)).first
+    Message.any_instance.stubs(:broadcast_remove_to).raises(Errno::ECONNREFUSED, "no redis")
+
+    assert_difference -> { Message.count }, -1 do
+      delete room_message_url(@room, message, format: :turbo_stream)
+    end
+
+    assert_response :success
+  end
+
   test "update updates a message belonging to the user" do
     message = @room.messages.where(creator: users(:david)).first
 
