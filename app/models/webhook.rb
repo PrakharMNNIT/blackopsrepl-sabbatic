@@ -22,7 +22,7 @@ class Webhook < ApplicationRecord
     end
   rescue Net::OpenTimeout, Net::ReadTimeout
     Rails.logger.warn("Webhook deliver timeout: webhook_id=#{id} bot_user_id=#{user_id} message_id=#{message.id} timeout_seconds=#{ENDPOINT_TIMEOUT}")
-    receive_text_reply_to message.room, text: "Bot is still processing and may reply shortly (timeout after #{ENDPOINT_TIMEOUT} seconds)."
+    receive_text_reply_to message.room, text: "Failed to respond within #{ENDPOINT_TIMEOUT} seconds"
   rescue Errno::ECONNREFUSED, SocketError => error
     Rails.logger.warn("Webhook deliver connection failure: webhook_id=#{id} bot_user_id=#{user_id} message_id=#{message.id} url=#{url} error_class=#{error.class.name} error_message=#{error.message}")
     receive_text_reply_to message.room, text: "Failed to connect to bot webhook endpoint"
